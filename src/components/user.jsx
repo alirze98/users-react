@@ -1,11 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import UsersContext from "../store/usersContext";
 
-const User = (props) => { 
-    const navigate = useNavigate()
-    const params = useParams();
-    const [user, setUser] = useState({});
+const User = (props) => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const [user, setUser] = useState({});
+  const usersCntx = useContext(UsersContext);
 
   useEffect(async () => {
     const response = await axios.get(
@@ -13,6 +16,16 @@ const User = (props) => {
     );
     setUser(response.data.data);
   }, []);
+  async function handleUpdate(){
+    const newUser = { 
+       avatar:'https://picsum.photos/200/300',
+       first_name:'updated',
+       last_name:'user',
+       email:'updatedUser@gmail.com'
+    };
+    const response = await axios.put('https://reqres.in/api/users/${params.id}',newUser);
+    setUser(response.data)
+  }
 
   return (
     <div className="col-4 text-center p-5">
@@ -24,25 +37,21 @@ const User = (props) => {
       </Link>
       <h3>{user.email}</h3>
       <button
-        onClick={() => {
-          this.handleUpdate(user);
-        }}
+        onClick={handleUpdate}
         className="btn btn-sm btn-primary m-2"
       >
         update
       </button>
       <button
+        className="btn btn-warning"
         onClick={() => {
-          this.handleDelete(user);
+          navigate("/users");
         }}
-        className="btn btn-sm btn-danger m-2"
       >
-        delete
+        users
       </button>
-     <button className="btn btn-warning" onClick={()=>{navigate('/users')}}>users</button>
     </div>
   );
-
-}; 
+};
 
 export default User;
